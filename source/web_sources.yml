@@ -1,41 +1,48 @@
-# Web scraper source definitions
-# Used by: webscraper.py
-# Add new sources here without touching Python code.
-#
-# Two source types:
-#   type: rss        — fetch a direct RSS/Atom feed URL
-#   type: google_news — search Google News RSS for site:DOMAIN breast cancer
-#
-# Fields:
-#   name        display name in report
-#   type        rss | google_news
-#   url         (rss only) full RSS feed URL
-#   domain      (google_news only) site to search, e.g. onclive.com
-#   max_items   max articles to retrieve
-#   bc_filter   (rss only) true = apply keyword filter; false = feed is already BC-specific
-#   noise_filter (google_news only) regex of title patterns to exclude as noise
-
 sources:
-  - name: OncDaily
+  - name: Alzforum
     type: rss
-    url: "https://oncodaily.com/oncolibrary/breast-oncology/feed/"
+    url: "https://www.alzforum.org/rss.xml"
     max_items: 20
-    bc_filter: false   # feed is already breast-oncology specific
+    bc_filter: false
 
-  - name: OncLive
+  - name: NeurologyToday
     type: google_news
-    domain: onclive.com
-    max_items: 30
+    domain: neurotodayonline.com
+    query: "Alzheimer dementia"
+    max_items: 20
+    noise_filter: "membership|about|contact|award|meeting registration"
+
+  - name: NEJM Alzheimer
+    type: google_news
+    domain: nejm.org
+    query: "Alzheimer dementia cognitive"
+    max_items: 15
     noise_filter: null
 
-  - name: ESMO
+  - name: JAMA Neurology
     type: google_news
-    domain: esmo.org
-    max_items: 30
-    noise_filter: "terms|privacy|home|guidelines|about|welcome|calendar|industry|partners|registration|preceptorship|congress \\d{4}:"
+    domain: jamanetwork.com
+    query: "Alzheimer dementia"
+    max_items: 15
+    noise_filter: null
 
-# HTTP headers used for all scraper requests
-http_headers:
-  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-  Accept-Language: "en-US,en;q=0.9"
+  - name: Alzheimer's Association News
+    type: google_news
+    domain: alz.org
+    query: "Alzheimer treatment research"
+    max_items: 20
+    noise_filter: "donate|walk|chapter|volunteer"
+
+  - name: CTAD / AAIC News
+    type: google_news
+    domain: ctad-alzheimer.com
+    query: "Alzheimer clinical trial"
+    max_items: 10
+    noise_filter: null
+
+  - name: OncLive Neurology (fallback)
+    type: google_news
+    domain: neurologylive.com
+    query: "Alzheimer dementia"
+    max_items: 20
+    noise_filter: "membership|about|contact"

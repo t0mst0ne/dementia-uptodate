@@ -1,0 +1,19 @@
+# Dementia / Alzheimer's Disease KOLs & Institutions
+alzassociation      # Alzheimer's Association
+alz_research        # Alzheimer's Research UK
+NIA_Aging           # National Institute on Aging
+AANmember           # American Academy of Neurology
+CTADAlzheimer       # CTAD Conference
+
+# Key Opinion Leaders (Neurologists / Researchers)
+reisaemory          # Reisa Sperling, Harvard – prevention trials (A4, AHEAD)
+aaic_alzheimer      # AAIC official
+SharonFarber        # Sharon Farber
+LynnaMilano         # Lyna Milano
+ErikASquires        # Erik Squires, dementia neurology
+
+# Pharma / Biotech
+eisai_us            # Eisai (lecanemab)
+lillypad            # Eli Lilly (donanemab)
+biogen              # Biogen (aducanumab)
+RocheGenentech      # Roche (gantenerumab)

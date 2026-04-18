@@ -1,121 +1,58 @@
-# Drug / target group definitions for tweet and article classification
-# Used by: reporter.py (trend aggregation)
-# Format: group_name: [keyword, ...]  (case-insensitive matching)
-
 drug_groups:
-  HER2-targeted:
-    - HER2
-    - trastuzumab
-    - pertuzumab
-    - T-DM1
-    - ado-trastuzumab
-    - T-DXd
-    - Enhertu
-    - trastuzumab deruxtecan
-    - tucatinib
-    - Tukysa
-    - lapatinib
-    - neratinib
-    - margetuximab
-    - DESTINY-Breast
+  Anti-amyloid monoclonal antibodies:
+    - lecanemab
+    - Leqembi
+    - donanemab
+    - Kisunla
+    - aducanumab
+    - Aduhelm
+    - gantenerumab
+    - solanezumab
+    - remternetug
 
-  CDK4/6 inhibitors:
-    - CDK4/6
-    - CDK4
-    - CDK6
-    - palbociclib
-    - Ibrance
-    - ribociclib
-    - Kisqali
-    - abemaciclib
-    - Verzenio
-    - MONARCH
-    - MONALEESA
-    - PALOMA
-    - NATALEE
+  Cholinesterase inhibitors:
+    - donepezil
+    - Aricept
+    - rivastigmine
+    - Exelon
+    - galantamine
+    - Razadyne
 
-  PARP inhibitors:
-    - PARP
-    - olaparib
-    - Lynparza
-    - talazoparib
-    - Talzenna
-    - niraparib
-    - rucaparib
-    - BRCA
-    - OlympiA
+  NMDA antagonists:
+    - memantine
+    - Namenda
+    - Namzaric
 
-  PI3K/AKT/mTOR:
-    - PI3K
-    - alpelisib
-    - Piqray
-    - AKT
-    - capivasertib
-    - mTOR
-    - everolimus
-    - Afinitor
-    - PIK3CA
+  BACE / secretase inhibitors:
+    - BACE1 inhibitor
+    - beta-secretase
+    - gamma-secretase
 
-  Immunotherapy:
-    - immunotherapy
-    - checkpoint
-    - PD-1
-    - PD-L1
-    - pembrolizumab
-    - Keytruda
-    - atezolizumab
-    - Tecentriq
-    - TIL
-    - tumor infiltrating lymphocyte
-    - KEYNOTE-522
+  Tau-targeting therapies:
+    - tau antibody
+    - anti-tau
+    - semorinemab
+    - gosuranemab
+    - zagotenemab
 
-  ADC:
-    - ADC
-    - antibody-drug conjugate
-    - sacituzumab
-    - Trodelvy
-    - datopotamab
-    - Datroway
-    - datopot
-    - TROP2
-    - ASCENT
+  Neuroinflammation / TREM2:
+    - TREM2
+    - AL002
+    - neuroinflammation
+    - microglial
 
-  Endocrine therapy:
-    - endocrine
-    - tamoxifen
-    - aromatase
-    - letrozole
-    - anastrozole
-    - exemestane
-    - fulvestrant
-    - Faslodex
-    - elacestrant
-    - Orserdu
-    - imlunestrant
-    - Inluriyo
-    - ESR1
-    - SERD
-    - EMBER
+  GLP-1 / metabolic:
+    - semaglutide
+    - liraglutide
+    - GLP-1
 
-  TNBC:
-    - TNBC
-    - triple negative
-    - triple-negative
-    - capecitabine
-    - carboplatin
-    - nab-paclitaxel
-    - Abraxane
-
-# Conference / event keywords (used for flagging conference tweets)
 conference_keywords:
-  - ASCO
-  - SABCS
-  - ESMO
-  - AACR
-  - ASH
+  - AAIC
+  - CTAD
+  - AAN
+  - ADPD
   - abstract
-  - conference
-  - congress
-  - "#ASCO"
-  - "#SABCS"
-  - "#ESMO"
+  - "#AAIC"
+  - "#CTAD"
+  - "#AAN2025"
+  - "#AAN2026"

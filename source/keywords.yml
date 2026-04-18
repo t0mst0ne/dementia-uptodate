@@ -1,106 +1,78 @@
-# Breast cancer relevance keywords
-# Used by: webscraper (article filtering & tagging), fetcher (tweet classification)
-# Add / remove terms here to tune what gets captured.
+dementia_keywords:
+  # 疾病名稱
+  - dementia
+  - Alzheimer
+  - Alzheimer's disease
+  - AD
+  - vascular dementia
+  - Lewy body dementia
+  - LBD
+  - frontotemporal dementia
+  - FTD
+  - mixed dementia
+  - mild cognitive impairment
+  - MCI
+  - cognitive decline
+  - neurodegeneration
+  - neurodegenerative
 
-breast_cancer_keywords:
-  # Disease subtypes
-  - breast cancer
-  - breast carcinoma
-  - HER2
-  - HER2+
-  - HER2-low
-  - HER2-ultralow
-  - TNBC
-  - triple-negative
-  - ER+
-  - HR+
+  # 生物標記 / 病理機轉
+  - amyloid
+  - amyloid beta
+  - Abeta
+  - tau
+  - phospho-tau
+  - p-tau
+  - neurofibrillary tangles
+  - NFT
+  - APOE4
+  - APOE epsilon4
+  - synaptic dysfunction
+  - neuroinflammation
+  - TDP-43
+  - alpha-synuclein
+  - BACE1
+  - gamma-secretase
 
-  # HER2-targeted agents
-  - trastuzumab
-  - pertuzumab
-  - T-DM1
-  - T-DXd
-  - Enhertu
-  - trastuzumab deruxtecan
-  - tucatinib
-  - Tukysa
-  - neratinib
-  - margetuximab
+  # 藥物 / 治療
+  - lecanemab
+  - Leqembi
+  - donanemab
+  - Kisunla
+  - aducanumab
+  - Aduhelm
+  - gantenerumab
+  - solanezumab
+  - remternetug
+  - semaglutide
+  - cholinesterase inhibitor
+  - donepezil
+  - rivastigmine
+  - galantamine
+  - memantine
+  - Namenda
+  - Aricept
 
-  # ADC
-  - sacituzumab
-  - Trodelvy
-  - datopotamab
-  - Datroway
-  - TROP2
-  - ADC
+  # 試驗 / 指引
+  - CLARITY AD
+  - TRAILBLAZER
+  - AHEAD
+  - A4 study
+  - ADAS-Cog
+  - CDR
+  - NPI
+  - MMSE
+  - amyloid PET
+  - tau PET
+  - CSF biomarker
+  - blood-based biomarker
+  - plasma p-tau217
+  - plasma p-tau181
 
-  # CDK4/6 inhibitors
-  - CDK4/6
-  - palbociclib
-  - Ibrance
-  - ribociclib
-  - Kisqali
-  - abemaciclib
-  - Verzenio
-
-  # PARP inhibitors
-  - PARP
-  - olaparib
-  - Lynparza
-  - talazoparib
-  - Talzenna
-  - BRCA
-
-  # Endocrine / SERD
-  - ESR1
-  - elacestrant
-  - Orserdu
-  - imlunestrant
-  - Inluriyo
-  - fulvestrant
-  - Faslodex
-  - tamoxifen
-  - aromatase inhibitor
-  - letrozole
-  - anastrozole
-  - exemestane
-  - endocrine
-
-  # PI3K/AKT/mTOR
-  - PI3K
-  - PIK3CA
-  - alpelisib
-  - Piqray
-  - capivasertib
-  - AKT
-  - mTOR
-  - everolimus
-
-  # Immunotherapy
-  - PD-L1
-  - PD-1
-  - pembrolizumab
-  - Keytruda
-  - atezolizumab
-  - immunotherapy
-
-  # Surgical / staging
-  - lumpectomy
-  - mastectomy
-  - neoadjuvant
-  - adjuvant
-  - mammogram
-
-  # Trial names (key ones worth tagging)
-  - DESTINY-Breast
-  - ASCENT
-  - NATALEE
-  - monarchE
-  - MONALEESA
-  - MONARCH
-  - PALOMA
-  - OlympiA
-  - EMBER
-  - KEYNOTE-522
-  - KATHERINE
+  # 機構 / 會議
+  - Alzheimer's Association
+  - AAIC
+  - CTAD
+  - AANneurology
+  - NIA
+  - ADNI

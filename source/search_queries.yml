@@ -1,21 +1,10 @@
-# Twitter search queries for breast cancer content
-# Used by: fetcher.py
-# Each query is passed to the Twitter search API.
-# Tips:
-#   - Keep each query focused on one therapeutic area
-#   - "lang:en" limits to English tweets
-#   - OR groups multiple synonyms
-#   - Twitter search supports quoted phrases
-
 search_queries:
-  - "(breast cancer) (HER2 OR TNBC OR CDK4 OR palbociclib OR ribociclib OR abemaciclib)"
-  - "(breast cancer) (T-DXd OR Enhertu OR trastuzumab OR pertuzumab OR tucatinib)"
-  - "(breast cancer) (PARP OR olaparib OR talazoparib OR BRCA)"
-  - "(breast cancer) (PI3K OR alpelisib OR AKT OR capivasertib OR ESR1)"
-  - "(breast cancer) (immunotherapy OR PD-L1 OR pembrolizumab OR sacituzumab OR Trodelvy)"
-  - "(breast cancer) (DESTINY-Breast OR MONARCH OR MONALEESA OR PALOMA OR OlympiA OR ASCENT)"
-  - "(breast cancer) (imlunestrant OR elacestrant OR ESR1 OR SERD OR oral endocrine)"
-  - "(#breastcancer) (trial OR data OR abstract OR FDA OR approval OR OS OR PFS)"
-  - "(metastatic breast cancer) lang:en"
-  - "(early breast cancer) (neoadjuvant OR adjuvant OR pCR) lang:en"
-  - "(TNBC OR triple-negative breast) lang:en"
+  - "(Alzheimer OR dementia) (lecanemab OR donanemab OR aducanumab OR anti-amyloid)"
+  - "(Alzheimer OR MCI) (FDA OR approval OR MHRA OR EMA OR phase 3)"
+  - "(dementia OR Alzheimer) (tau OR amyloid OR biomarker OR p-tau217)"
+  - "(lecanemab OR Leqembi OR donanemab OR Kisunla) (ARIA OR safety OR efficacy OR OS)"
+  - "(Alzheimer) (AAIC OR CTAD OR AAN OR abstract OR trial)"
+  - "(mild cognitive impairment OR MCI) (progression OR conversion OR treatment)"
+  - "(vascular dementia OR Lewy body OR FTD) (treatment OR trial OR biomarker)"
+  - "(dementia) (blood test OR plasma biomarker OR p-tau OR amyloid PET)"
+  - "(Alzheimer's disease) lang:en"
