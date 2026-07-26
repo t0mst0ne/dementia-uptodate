@@ -35,10 +35,10 @@
 ├── source/
 │   ├── keywords.yml        # 失智症關鍵字列表
 │   ├── drug_groups.yml     # 藥物分群設定
-│   ├── search_queries.yml  # Twitter/X 搜尋 query
+│   ├── search_queries.yml  # 保留的歷史設定
 │   └── web_sources.yml     # RSS / Google News 來源
 ├── config/
-│   └── seeds.txt           # KOL Twitter 帳號列表
+│   └── seeds.txt           # 保留的歷史設定
 ├── src/
 │   ├── webscraper.py       # 網頁爬蟲
 │   ├── reporter.py         # AI 摘要產生器
@@ -56,10 +56,7 @@
 
 | Secret 名稱 | 說明 |
 |------------|------|
-| `TWITTER_USERNAME` | X/Twitter username（不含 @） |
-| `TWITTER_EMAIL` | X/Twitter account email |
-| `TWITTER_AUTH_TOKEN` | X/Twitter `auth_token` cookie |
-| `TWITTER_CT0` | X/Twitter `ct0` cookie |
+No secrets are required. The weekly job uses public RSS, Google News, and CrossRef sources.
 
 ### 2. 修改資料來源
 
@@ -84,8 +81,7 @@ python main.py
 
 GitHub Actions 每週一 UTC 00:00 自動執行，結果提交至 `reports/`，再由 Wiki workflow 發布至本 repo 的 **Wiki**。
 
-首次啟用前，請在 GitHub repository settings → Secrets and variables → Actions
-新增上述四個 secrets，並先初始化 repository Wiki。
+首次啟用前，請先初始化 repository Wiki。
 
 ---
 
