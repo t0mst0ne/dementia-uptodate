@@ -12,6 +12,7 @@ Usage:
 """
 
 import sys
+import os
 from pathlib import Path
 from rich.console import Console
 from rich.table import Table
@@ -28,6 +29,14 @@ def _load_creds() -> tuple[str, str, str, str] | None:
         parts = CREDS_FILE.read_text().strip().splitlines()
         if len(parts) == 4:
             return parts[0], parts[1], parts[2], parts[3]
+    env_creds = (
+        os.getenv("TWITTER_USERNAME"),
+        os.getenv("TWITTER_EMAIL"),
+        os.getenv("TWITTER_AUTH_TOKEN"),
+        os.getenv("TWITTER_CT0"),
+    )
+    if all(env_creds):
+        return env_creds
     return None
 
 

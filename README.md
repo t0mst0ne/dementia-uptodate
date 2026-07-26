@@ -1,229 +1,119 @@
-# Oncology Weekly Trend Reporter
+# 🧠 Dementia & Alzheimer's Disease — Weekly Trend Report
 
-自動生成腫瘤科每週治療趨勢報告，以繁體中文撰寫（英文醫學名詞不翻譯）。
-
-目前設定：**乳癌（Breast Cancer）**
-
-資料來源：OpenEvidence AI · OncDaily RSS · OncLive · ESMO · ClinicalTrials.gov
-
-週報範例：[2026-W16](https://github.com/htlin222/breast-cancer-uptodate/wiki/2026-W16)
+> 自動彙整失智症 / 阿茲海默症相關的最新研究、臨床試驗、藥物核准動態，每週發布至 GitHub Wiki。
 
 ---
 
-## 快速開始
+## 📌 目前主題
 
-```bash
-# 安裝 uv（Python 套件管理）
-curl -LsSf https://astral.sh/uv/install.sh | sh
+**失智症 / 阿茲海默症（Dementia / Alzheimer's Disease）**
 
-# 安裝相依套件
-uv sync
-
-# 執行爬蟲 + 報告（OncDaily / OncLive / ESMO）
-uv run python main.py scrape
-
-# 生成報告（需手動補充 OpenEvidence 段落，或直接在 Claude Code 中執行）
-uv run python main.py report
-```
-
-報告輸出至 `reports/YYYY-Wxx.md`，push 到 `main` 後 GitHub Actions 自動發布至 Wiki。
+涵蓋：
+- Amyloid 標靶治療（lecanemab、donanemab、aducanumab...）
+- Tau 標靶治療
+- Cholinesterase inhibitors & memantine
+- 血液/影像 biomarker（plasma p-tau217、amyloid PET、tau PET）
+- 輕度認知障礙（MCI）進展追蹤
+- AAIC、CTAD、AAN 等重要會議摘要
 
 ---
 
-## 專案結構
+## 🚀 功能
+
+- **自動爬取**：Alzforum、NEJM、JAMA Neurology、Alzheimer's Association、CTAD 等來源
+- **關鍵字篩選**：依 `source/keywords.yml` 過濾相關文章
+- **藥物分群**：依 `source/drug_groups.yml` 自動分類新聞
+- **AI 摘要**：使用 Claude API 產生中文摘要報告
+- **自動發布**：每週透過 GitHub Actions 更新 Wiki
+
+---
+
+## 📁 專案結構
 
 ```
 .
-├── source/                   ← 所有可調整參數（不需改 Python）
-│   ├── keywords.yml          ← 疾病相關關鍵詞（過濾用）
-│   ├── drug_groups.yml       ← 藥物分組 + 會議關鍵詞
-│   ├── search_queries.yml    ← Twitter 搜尋 query
-│   ├── web_sources.yml       ← 爬蟲來源（RSS URL、Google News site）
-│   └── twitter.yml           ← GraphQL op_id、cookie skip 清單
+├── source/
+│   ├── keywords.yml        # 失智症關鍵字列表
+│   ├── drug_groups.yml     # 藥物分群設定
+│   ├── search_queries.yml  # Twitter/X 搜尋 query
+│   └── web_sources.yml     # RSS / Google News 來源
 ├── config/
-│   └── seeds.txt             ← KOL Twitter 帳號種子清單
+│   └── seeds.txt           # KOL Twitter 帳號列表
 ├── src/
-│   ├── config.py             ← YAML 載入器（lru_cache）
-│   ├── webscraper.py         ← 網路爬蟲（driven by web_sources.yml）
-│   ├── fetcher.py            ← Twitter 爬蟲（driven by twitter.yml）
-│   ├── reporter.py           ← 推文聚合報告生成
-│   ├── discover.py           ← KOL 自動發掘
-│   └── db.py                 ← SQLite 儲存
-├── reports/                  ← 產出的週報（push 即觸發 wiki 發布）
-├── main.py                   ← CLI 入口
-└── .github/workflows/
-    └── publish-wiki.yml      ← 自動發布 wiki 的 GitHub Action
+│   ├── webscraper.py       # 網頁爬蟲
+│   ├── reporter.py         # AI 摘要產生器
+│   └── wiki_publisher.py   # Wiki 發布器
+├── reports/                # 產生的週報（Markdown）
+├── .github/workflows/      # GitHub Actions CI/CD
+└── main.py                 # 主程式入口
 ```
 
 ---
 
-## 切換到其他癌症 / 血液腫瘤
+## ⚙️ 設定
 
-本系統設計為**癌症無關（cancer-agnostic）**，所有領域知識都集中在 `source/` 下的 YAML 檔案，切換癌種只需修改這五個檔案，**不需動任何 Python 程式碼**。
+### 1. 必要的 GitHub Secrets
 
-### 步驟 1 — 替換 `source/keywords.yml`
+| Secret 名稱 | 說明 |
+|------------|------|
+| `TWITTER_USERNAME` | X/Twitter username（不含 @） |
+| `TWITTER_EMAIL` | X/Twitter account email |
+| `TWITTER_AUTH_TOKEN` | X/Twitter `auth_token` cookie |
+| `TWITTER_CT0` | X/Twitter `ct0` cookie |
 
-```yaml
-# 以瀰漫性大 B 細胞淋巴瘤（DLBCL）為例
-breast_cancer_keywords:       # ← 改這個 key 的值（key 名稱不重要）
-  - DLBCL
-  - diffuse large B-cell lymphoma
-  - rituximab
-  - R-CHOP
-  - polatuzumab vedotin
-  - Polivy
-  - CAR-T
-  - axicabtagene
-  - lisocabtagene
-  - loncastuximab
-  - tafasitamab
-  - Monjuvi
-  - bispecific
-  - epcoritamab
-  - glofitamab
-  - BCL2
-  - venetoclax
-  - PI3K delta
-  - CD19
-  - CD20
-  - POLARIX
-  - L-MIND
-```
+### 2. 修改資料來源
 
-### 步驟 2 — 替換 `source/drug_groups.yml`
+編輯 `source/web_sources.yml` 新增或移除網站來源。
 
-依新癌種重寫藥物分組：
+### 3. 修改關鍵字
 
-```yaml
-drug_groups:
-  Anti-CD20:
-    - rituximab
-    - obinutuzumab
-    - Gazyva
-  CAR-T:
-    - axicabtagene
-    - lisocabtagene
-    - axi-cel
-    - liso-cel
-    - ZUMA
-    - TRANSFORM
-  Bispecific antibodies:
-    - epcoritamab
-    - glofitamab
-    - mosunetuzumab
-  BCL2 inhibitors:
-    - venetoclax
-    - Venclyxto
-
-conference_keywords:
-  - ASH
-  - ASCO
-  - EHA
-  - ICML
-  - abstract
-  - "#ASH"
-  - "#EHA"
-```
-
-### 步驟 3 — 替換 `source/search_queries.yml`
-
-```yaml
-search_queries:
-  - "(DLBCL OR diffuse large B-cell) (R-CHOP OR polatuzumab OR CAR-T)"
-  - "(DLBCL) (CAR-T OR axicabtagene OR lisocabtagene OR ZUMA OR TRANSFORM)"
-  - "(lymphoma) (bispecific OR epcoritamab OR glofitamab OR mosunetuzumab)"
-  - "(DLBCL OR lymphoma) (FDA OR approval OR OS OR PFS OR abstract)"
-  - "(diffuse large B cell lymphoma) lang:en"
-```
-
-### 步驟 4 — 替換 `source/web_sources.yml`（選擇性）
-
-大部分來源（OncLive、ESMO）本身就涵蓋血液腫瘤，只需調整 Google News 搜尋字串：
-
-```yaml
-sources:
-  - name: OncDaily
-    type: rss
-    url: "https://oncodaily.com/oncolibrary/hematology/feed/"   # ← 改路徑
-    max_items: 20
-    bc_filter: false
-
-  - name: OncLive
-    type: google_news
-    domain: onclive.com
-    max_items: 30
-    noise_filter: null
-    # Google News query 自動為 "site:onclive.com breast cancer"
-    # 改為 DLBCL 需修改 webscraper.py 中的 q= 字串
-    # 或在 web_sources.yml 加 query 欄位（見下方進階說明）
-
-  - name: ASH News
-    type: google_news
-    domain: hematology.org
-    max_items: 20
-    noise_filter: "membership|about|contact|award|meeting registration"
-```
-
-#### 進階：自訂 Google News 查詢字串
-
-在 `web_sources.yml` 加 `query` 欄位，`webscraper.py` 會優先使用：
-
-```yaml
-  - name: OncLive
-    type: google_news
-    domain: onclive.com
-    query: "DLBCL OR lymphoma"    # ← 覆蓋預設的 "breast cancer"
-    max_items: 30
-```
-
-並在 `src/webscraper.py` 的 `_fetch_google_news` 函式中讀取：
-
-```python
-query_term = src.get("query", "breast cancer")  # 一行改動
-q = f"site:{domain} {query_term}"
-```
-
-### 步驟 5 — 替換 `config/seeds.txt`
-
-```
-# DLBCL / Hematology KOLs
-JasonHAlderma    # Jason Westin, MD Anderson
-LorenzoCerchiett # Lorenz Cerchione
-seemaasst        # Seema Ansari
-lymphomainfo     # Lymphoma Research Foundation
-ASHhematology    # American Society of Hematology
-```
-
-### 步驟 6 — 改報告標題（選擇性）
-
-`main.py` 的 `cmd_scrape` 與 `src/reporter.py` 中的標題字串可直接改。
+編輯 `source/keywords.yml` 調整過濾條件。
 
 ---
 
-## 常見維護任務
+## 🔄 執行方式
 
-| 問題 | 解法 |
-|------|------|
-| Twitter API 回 404 | 更新 `source/twitter.yml` 的 `op_id` |
-| 某新藥沒被捕捉 | 加進 `source/keywords.yml` 和對應 `drug_groups.yml` |
-| 新增爬蟲來源 | 在 `source/web_sources.yml` 加一筆 `type: rss` 或 `type: google_news` |
-| 查詢字串太雜 | 修改 `source/search_queries.yml` |
-| Wiki 沒更新 | 確認 push 路徑含 `reports/*.md`；或手動跑 Actions → `workflow_dispatch` |
+### 手動執行
 
----
+```bash
+pip install -r requirements.txt
+python main.py
+```
 
-## GitHub Actions — Wiki 自動發布
+### 自動排程
 
-每次 push 包含 `reports/*.md` 的 commit 到 `main`，`.github/workflows/publish-wiki.yml` 自動：
+GitHub Actions 每週一 UTC 00:00 自動執行，結果提交至 `reports/`，再由 Wiki workflow 發布至本 repo 的 **Wiki**。
 
-1. 把新報告複製到 wiki repo
-2. 重建 `Home.md` 索引（最新在前）
-3. Force-push 到 wiki `master` branch
-
-手動觸發：Actions → **Publish Reports to Wiki** → **Run workflow**
+首次啟用前，請在 GitHub repository settings → Secrets and variables → Actions
+新增上述四個 secrets，並先初始化 repository Wiki。
 
 ---
 
-## 授權
+## 📊 報告範例
 
-MIT
+每份週報包含：
+- 本週重點新聞摘要（中文）
+- 依藥物分類的試驗進展
+- 新藥核准 / FDA 動態
+- 重要會議（AAIC / CTAD / AAN）摘要
+
+---
+
+## 🔗 相關資源
+
+- [Alzforum](https://www.alzforum.org/)
+- [Alzheimer's Association](https://www.alz.org/)
+- [ClinicalTrials.gov — Dementia](https://clinicaltrials.gov/search?cond=Dementia)
+- [AAIC](https://aaic.alz.org/)
+- [CTAD](https://www.ctad-alzheimer.com/)
+
+---
+
+## 📝 License
+
+MIT License — 本專案為學術與臨床教育用途。
+
+---
+
+> 原始專案：[htlin222/breast-cancer-uptodate](https://github.com/htlin222/breast-cancer-uptodate)
+> 改編版本：失智症主題

@@ -15,7 +15,10 @@ def _load(filename: str) -> Any:
 
 @lru_cache(maxsize=None)
 def keywords() -> list[str]:
-    return _load("keywords.yml")["breast_cancer_keywords"]
+    data = _load("keywords.yml")
+    # Keep compatibility with the original breast-cancer configuration while
+    # allowing the project to use its current dementia topic.
+    return data.get("dementia_keywords", data.get("breast_cancer_keywords", []))
 
 
 @lru_cache(maxsize=None)
