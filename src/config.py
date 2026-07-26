@@ -43,7 +43,10 @@ def web_sources() -> list[dict]:
 
 @lru_cache(maxsize=None)
 def http_headers() -> dict[str, str]:
-    return _load("web_sources.yml")["http_headers"]
+    return _load("web_sources.yml").get("http_headers", {
+        "User-Agent": "dementia-uptodate/1.0 (research report collector)",
+        "Accept": "application/rss+xml, application/xml, text/xml, text/html",
+    })
 
 
 @lru_cache(maxsize=None)
