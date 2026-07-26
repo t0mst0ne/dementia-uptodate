@@ -1,13 +1,13 @@
-# CLAUDE.md — Breast Cancer Weekly Report
+# CLAUDE.md — Dementia & Alzheimer's Weekly Report
 
 ## Project Purpose
 
-Auto-generate weekly Markdown reports on breast cancer treatment trends from:
+Auto-generate weekly Markdown reports on dementia and Alzheimer's disease trends from:
 - OpenEvidence MCP (`mcp__openevidence__oe_ask`)
-- PubMed MCP (`mcp__claude_ai_PubMed__search_articles`)
-- ClinicalTrials.gov MCP (`mcp__claude_ai_Clinical_Trials__search_trials`)
-- CrossRef API (via `python main.py journals`)
-- Web news (OncDaily RSS, OncLive/ESMO via Google News RSS)
+- UpToDate MCP (`mcp__uptodate__uptodate_search`)
+- CrossRef API — neurology/dementia journals (via `uv run python main.py journals`)
+- Web news — Alzforum, NeurologyToday, Alzheimer's Association, CTAD/AAIC, and
+  NEJM/JAMA Neurology via Google News RSS (via `uv run python main.py scrape`)
 
 ---
 
@@ -22,7 +22,7 @@ echo "Previous report: $PREV"
 
 # 2. Read it fully — note every trial, drug approval, and section topic covered
 # 3. Grep key trial names to see what's already documented
-grep -E "DESTINY-Breast|ASCENT|NATALEE|monarchE|VIKTORIA|EMBER|TROPION|INAVO|SERENA" reports/$PREV
+grep -E "CLARITY AD|TRAILBLAZER|AHEAD|DIAN-TU|GRADUATE|evoke|SKYLINE|PrevenTRON|LiBBY|PROTECT-Cog" reports/$PREV
 ```
 
 After reading the previous report, answer these before writing:
@@ -44,6 +44,10 @@ reports/YYYY-WNN.md
 
 Use ISO week number: `python3 -c "from datetime import date; d=date.today(); print(f'{d.year}-W{d.isocalendar()[1]:02d}')"`.
 
+The GitHub Action runs on UTC. Triggering it manually while UTC is still Sunday
+produces a file for the *previous* ISO week that duplicates the current one — only
+the Monday 00:00 UTC schedule lands on the intended week.
+
 ---
 
 ## Report Structure
@@ -51,7 +55,7 @@ Use ISO week number: `python3 -c "from datetime import date; d=date.today(); pri
 ### Required Sections (繁體中文)
 
 ```
-# 乳癌治療趨勢週報 — YYYY-WNN
+# 失智症治療趨勢週報 — YYYY-WNN
 
 > 生成日期：YYYY-MM-DD｜資料來源：...
 > 涵蓋期間：...
@@ -61,25 +65,26 @@ Use ISO week number: `python3 -c "from datetime import date; d=date.today(); pri
 ## 摘要
 （本週五大訊號 — bullet points, concrete numbers）
 
-## 一、HER2 靶向治療
-## 二、ADC 在 TNBC
-## 三、HR+/HER2− 內分泌治療
-## 四、CDK4/6 Inhibitor：輔助治療確立
-## 五、PARP Inhibitor 與 BRCA 族群
-## 六、免疫治療 (TNBC)
-## 七、早期乳癌：手術、放療、風險分層
-## 八、進行中高優先試驗追蹤
-## 九、台灣臨床情境備註
-## 十、本週 Key Takeaways
+## 一、抗類澱粉單株抗體（lecanemab / donanemab / trontinemab）
+## 二、血液生物標記（p-tau217、p-tau181、GFAP、NfL）
+## 三、影像與 CSF 診斷（amyloid PET、tau PET、CSF）
+## 四、新機轉與非類澱粉標靶（tau、neuroinflammation、GLP-1）
+## 五、症狀治療與 BPSD（膽鹼酯酶抑制劑、memantine、agitation）
+## 六、風險因子與預防（血壓、聽力、運動、疫苗）
+## 七、非阿茲海默型失智症（LBD、FTD、血管性、混合型）
+## 八、照護體系與流行病學
+## 九、進行中高優先試驗追蹤
+## 十、台灣臨床情境備註
+## 十一、本週 Key Takeaways
 
-## 十一、蜥蜴LLM 點評
+## 十二、蜥蜴LLM 點評
 （OpenEvidence分類：practice-changing vs hypothesis-generating）
 
-## 十二、媒體動態
-（OncDaily / OncLive / ESMO news table）
+## 十三、媒體動態
+（Alzforum / NeurologyToday / Alzheimer's Association / CTAD-AAIC news table）
 
 ## 文獻速報 — CrossRef 期刊
-（LLM-filtered JCO articles）
+（LLM-filtered neurology journal articles）
 ```
 
 Sections without new data this week should say: `_本週無新訊號_`
@@ -88,10 +93,12 @@ Sections without new data this week should say: `_本週無新訊號_`
 
 ## Writing Style
 
-- Language: **繁體中文**，英文術語保留原文（T-DXd, HR, PFS, iDFS 等）
+- Language: **繁體中文**，英文術語保留原文（amyloid, tau, ARIA-E, CDR-SB, MMSE 等）
 - Every clinical claim must cite trial name + author + journal + DOI
-- Tables: use Markdown tables for comparative data (trial vs control arm)
-- Numbers: always include HR, CI, p-value when available
+- Tables: use Markdown tables for comparative data (treatment vs placebo arm)
+- Numbers: always include HR, CI, p-value when available. For cognitive endpoints
+  report the between-group difference on CDR-SB / ADAS-Cog / ADCS-ADL, not just
+  "slowed decline". For anti-amyloid agents always state ARIA-E and ARIA-H rates.
 - Avoid vague superlatives; every "significant" needs a number
 
 ---
@@ -101,24 +108,42 @@ Sections without new data this week should say: `_本週無新訊號_`
 Run in order before writing:
 
 ```bash
-uv run python main.py scrape          # OncDaily + OncLive + ESMO news
-uv run python main.py journals        # JCO CrossRef (keyword pre-screened)
+uv run python main.py scrape          # web news, last 7 days
+uv run python main.py journals        # CrossRef neurology journals, last 14 days
 ```
 
-For full pipeline (including Twitter if credentials available):
+Full pipeline (scrape + journals + write the source report):
 
 ```bash
 uv run python main.py run
+```
+
+Notify Telegram about the latest report (needs `TELEGRAM_BOT_TOKEN` /
+`TELEGRAM_CHAT_ID`; silently skipped when unset):
+
+```bash
+uv run python main.py notify
 ```
 
 Cached data locations:
 - `data/webscrape_cache.json` — web news articles
 - `data/journals_cache.json` — CrossRef journal articles (pre-screened, not yet final-filtered)
 
-**CrossRef filtering note:** The Python fetcher applies a keyword pre-screen only (broad net).
-When writing the report, read `data/journals_cache.json` and **filter in-session** — discard any
-article whose primary topic is not breast cancer (e.g. gastroesophageal articles that share HER2).
-Only include articles confirmed breast-cancer-relevant in the `## 文獻速報` section.
+### Filtering gotchas (learned the hard way)
+
+**Keyword matching is word-boundary anchored, not substring.** Short abbreviations
+in `source/keywords.yml` (`AD`, `tau`, `MCI`, `NIA`) would otherwise match inside
+unrelated words — `AD` hits "r*ad*iotherapy", `tau` hits "pla*tau*". Use
+`config.match_keywords()` / `config.keyword_pattern()`; never write `kw in text`.
+
+**The CrossRef pre-screen is a two-tier filter** (`src/crossref_fetcher.py`).
+Tier 1 terms (`dementia`, `Alzheimer`, `lecanemab`, `p-tau217`, …) pass on their
+own; Tier 2 terms (`amyloid`, `tau`, `biomarker`, `cognition`) never do, because
+they also appear in cardiac amyloidosis and oncology papers.
+
+**Still filter in-session.** The Python pre-screen is a broad net. When writing the
+report, read `data/journals_cache.json` and discard any article whose primary topic
+is not dementia. Only include confirmed-relevant articles in `## 文獻速報`.
 
 ---
 
@@ -127,7 +152,7 @@ Only include articles confirmed breast-cancer-relevant in the `## 文獻速報` 
 Use `mcp__openevidence__oe_ask` with a prompt like:
 
 ```
-Based on the following breast cancer findings from this week, classify each as:
+Based on the following dementia findings from this week, classify each as:
 - Practice-changing (changes standard of care NOW)
 - Hypothesis-generating (promising but needs confirmation)
 - Context-dependent (changes practice for specific subgroup only)
@@ -143,9 +168,8 @@ Extract result with: `result.extracted_answer_raw`
 
 1. Check word count: report should be 3000–8000 words
 2. Verify every table has header separators (`|---|---|`)
-3. Run `uv run python main.py report` if auto-generating from DB
-4. Commit: `git add reports/YYYY-WNN.md && git commit -m "report: YYYY-WNN"`
-5. Push → GitHub Action auto-publishes to Wiki
+3. Commit: `git add reports/YYYY-WNN.md && git commit -m "report: YYYY-WNN"`
+4. Push → GitHub Action auto-publishes to Wiki and notifies Telegram
 
 ---
 
@@ -156,9 +180,9 @@ Before finalising, cross-check against the previous report:
 ```bash
 PREV=$(ls reports/ -t | head -2 | tail -1)
 # Check trial names
-grep -E "DESTINY-Breast|ASCENT|NATALEE|monarchE|VIKTORIA|EMBER|TROPION|INAVO|SERENA" reports/$PREV
-# Check HR/PFS numbers — if same numbers appear, it's a repeat
-grep -E "HR [0-9]|PFS [0-9]|iDFS [0-9]|ORR [0-9]" reports/$PREV | head -20
+grep -E "CLARITY AD|TRAILBLAZER|AHEAD|DIAN-TU|GRADUATE|evoke|SKYLINE|PrevenTRON" reports/$PREV
+# Check effect sizes — if same numbers appear, it's a repeat
+grep -E "HR [0-9]|CDR-SB [0-9]|ADAS-Cog [0-9]|ARIA-E [0-9]" reports/$PREV | head -20
 ```
 
 Rules:
@@ -168,6 +192,9 @@ Rules:
 
 ---
 
-## Switching to Another Cancer Type
+## Switching to Another Topic
 
-See `README.md` → "如何切換至其他癌種" for step-by-step instructions (DLBCL example included).
+Sources live in `source/` (`keywords.yml`, `web_sources.yml`, `journals.yml`) and
+need no code changes. The Tier-1/Tier-2 term lists in `src/crossref_fetcher.py` are
+topic-specific and **must** be updated too — a stale list silently passes the wrong
+specialty's papers. See `README.md` for the step-by-step walkthrough.
