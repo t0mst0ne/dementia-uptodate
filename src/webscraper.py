@@ -1,4 +1,4 @@
-"""Scrape latest breast cancer articles from configured web sources."""
+"""Scrape latest dementia and Alzheimer's articles from configured sources."""
 
 import asyncio
 import re
@@ -99,9 +99,10 @@ async def _fetch_google_news(client: httpx.AsyncClient, src: dict) -> list[Artic
     max_items = src.get("max_items", 20)
     noise_pat = re.compile(src["noise_filter"], re.I) if src.get("noise_filter") else None
 
+    query = src.get("query", "Alzheimer dementia")
     feed_url = (
         f"https://news.google.com/rss/search"
-        f"?q=site:{domain}+breast+cancer&hl=en-US&gl=US&ceid=US:en"
+        f"?q=site:{domain}+{query.replace(' ', '+')}&hl=en-US&gl=US&ceid=US:en"
     )
     try:
         r = await client.get(feed_url, timeout=20)
@@ -178,7 +179,7 @@ def format_articles_md(results: dict[str, list[Article]]) -> str:
         if not articles:
             lines.append(f"\n### {source}\n\n_本週未取得相關文章_\n")
             continue
-        lines.append(f"\n### {source}（{len(articles)} 篇乳癌相關）\n")
+        lines.append(f"\n### {source}（{len(articles)} 篇失智症相關）\n")
         lines.append("| 標題 | 日期 | 關鍵詞 |")
         lines.append("|------|------|--------|")
         for a in articles[:15]:

@@ -72,9 +72,9 @@ jobs:
 
           # Rebuild Home.md index (newest first)
           {
-            echo "# 乳癌治療趨勢週報"
+            echo "# 失智症與阿茲海默症治療趨勢週報"
             echo ""
-            echo "> 每週自動生成 · 資料來源：OpenEvidence、OncDaily、OncLive、ESMO、ClinicalTrials.gov"
+            echo "> 每週自動生成 · 資料來源：Alzforum、Neurology Today、NEJM、JAMA Neurology、CTAD、ClinicalTrials.gov"
             echo ""
             echo "| 週次 | 連結 |"
             echo "|------|------|"

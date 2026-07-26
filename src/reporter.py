@@ -25,7 +25,7 @@ def build_report(days: int = 7) -> str:
     week_label = f"{week[0]}-W{week[1]:02d}"
 
     if not tweets:
-        return f"# Breast Cancer Twitter Trend Report {week_label}\n\nNo tweets found in last {days} days.\n"
+        return f"# Dementia & Alzheimer's Twitter Trend Report {week_label}\n\nNo tweets found in last {days} days.\n"
 
     conf_kws = config.conference_keywords()
     group_tweets: dict[str, list[dict]] = defaultdict(list)
@@ -45,9 +45,9 @@ def build_report(days: int = 7) -> str:
     active_groups = sorted(group_tweets.items(), key=lambda x: len(x[1]), reverse=True)
 
     lines = []
-    lines.append(f"# Breast Cancer Twitter Trend Report — {week_label}")
+    lines.append(f"# Dementia & Alzheimer's Twitter Trend Report — {week_label}")
     lines.append(f"\n> Generated {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')} | "
-                 f"{len(tweets)} BC-relevant tweets | {len(accounts)} tracked accounts\n")
+                 f"{len(tweets)} dementia-relevant tweets | {len(accounts)} tracked accounts\n")
 
     lines.append("## Overview\n")
     lines.append("### Trending Topics by Volume\n")
@@ -59,7 +59,7 @@ def build_report(days: int = 7) -> str:
 
     lines.append("")
     lines.append("### Most Active KOLs This Week\n")
-    lines.append("| Handle | BC Tweets |")
+    lines.append("| Handle | Dementia Tweets |")
     lines.append("|--------|-----------|")
     for auth, cnt in author_counts.most_common(10):
         lines.append(f"| @{auth} | {cnt} |")

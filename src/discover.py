@@ -6,7 +6,7 @@ from rich.console import Console
 console = Console()
 
 BC_BIO_KEYWORDS = [
-    "oncol", "breast", "cancer", "hematol", "tumor", "oncology",
+    "dementia", "alzheimer", "neurolog", "cognitive", "amyloid", "tau",
     "clinical trial", "MD", "physician", "researcher",
 ]
 
