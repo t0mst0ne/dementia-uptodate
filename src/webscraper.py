@@ -3,6 +3,7 @@
 import asyncio
 import re
 from dataclasses import dataclass, field
+from datetime import date, timedelta
 from email.utils import parsedate_to_datetime
 from typing import Optional
 
@@ -94,15 +95,17 @@ async def _fetch_rss(client: httpx.AsyncClient, src: dict) -> list[Article]:
         return []
 
 
-async def _fetch_google_news(client: httpx.AsyncClient, src: dict) -> list[Article]:
+async def _fetch_google_news(client: httpx.AsyncClient, src: dict, days: int = 7) -> list[Article]:
     domain = src["domain"]
     max_items = src.get("max_items", 20)
     noise_pat = re.compile(src["noise_filter"], re.I) if src.get("noise_filter") else None
 
+    # `when:Nd` keeps Google News from returning decades-old relevance matches.
     query = src.get("query", "Alzheimer dementia")
     feed_url = (
         f"https://news.google.com/rss/search"
-        f"?q=site:{domain}+{query.replace(' ', '+')}&hl=en-US&gl=US&ceid=US:en"
+        f"?q=site:{domain}+{query.replace(' ', '+')}+when:{days}d"
+        f"&hl=en-US&gl=US&ceid=US:en"
     )
     try:
         r = await client.get(feed_url, timeout=20)
@@ -153,8 +156,20 @@ async def _fetch_google_news(client: httpx.AsyncClient, src: dict) -> list[Artic
     return articles
 
 
+def _within_window(article: Article, cutoff: date) -> bool:
+    """Keep articles published on/after cutoff. Undated articles are dropped —
+    Google News relevance matches without a pubDate are usually evergreen pages."""
+    if not article.published:
+        return False
+    try:
+        return date.fromisoformat(article.published) >= cutoff
+    except ValueError:
+        return False
+
+
 async def fetch_all(days: int = 7) -> dict[str, list[Article]]:
-    """Fetch articles from all configured sources. Returns {source_name: [Article]}."""
+    """Fetch articles published within the last `days` days from all configured
+    sources. Returns {source_name: [Article]} sorted newest first."""
     headers = config.http_headers()
     sources = config.web_sources()
 
@@ -164,11 +179,19 @@ async def fetch_all(days: int = 7) -> dict[str, list[Article]]:
             if src["type"] == "rss":
                 tasks.append(_fetch_rss(client, src))
             elif src["type"] == "google_news":
-                tasks.append(_fetch_google_news(client, src))
+                tasks.append(_fetch_google_news(client, src, days=days))
 
         results_list = await asyncio.gather(*tasks)
 
-    return {src["name"]: arts for src, arts in zip(sources, results_list)}
+    cutoff = date.today() - timedelta(days=days)
+    return {
+        src["name"]: sorted(
+            (a for a in arts if _within_window(a, cutoff)),
+            key=lambda a: a.published,
+            reverse=True,
+        )
+        for src, arts in zip(sources, results_list)
+    }
 
 
 def format_articles_md(results: dict[str, list[Article]]) -> str:

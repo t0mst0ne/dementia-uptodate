@@ -67,13 +67,13 @@ def cmd_run():
     web_results = cmd_scrape()
     journal_results = cmd_journals()
 
-    from datetime import date, datetime
+    from datetime import date, datetime, timezone
     week = date.today().isocalendar()
     report_path = Path(__file__).parent / "reports" / f"{week[0]}-W{week[1]:02d}.md"
     report_path.parent.mkdir(exist_ok=True)
     report = [
         f"# Dementia & Alzheimer's Disease — Weekly Trend Report {week[0]}-W{week[1]:02d}",
-        f"\n> Generated {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')} from configured web and journal sources.\n",
+        f"\n> Generated {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} from configured web and journal sources.\n",
         webscraper.format_articles_md(web_results),
         crossref_fetcher.format_articles_md(journal_results),
     ]
