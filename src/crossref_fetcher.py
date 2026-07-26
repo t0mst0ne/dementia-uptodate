@@ -16,20 +16,24 @@ SOURCE_DIR = Path(__file__).parent.parent / "source"
 JATS_TAG = re.compile(r"<[^>]+>")
 
 # Pre-screen: two-tier filter.
-# Tier 1 — unambiguous BC terms: pass immediately.
-# Tier 2 — shared biomarkers (also used in gastric/lung/etc): only pass when
-#           a Tier-1 term is also present. This blocks gastroesophageal/lung
-#           articles that mention HER2/trastuzumab/T-DXd without "breast".
-_BC_DIRECT = [
-    "breast", "mammary", "TNBC", "ESR1",
-    "ribociclib", "palbociclib", "abemaciclib",   # CDK4/6 — primarily BC
-    "imlunestrant", "elacestrant",                 # SERD — BC-only
-    "DESTINY-Breast", "NATALEE", "monarchE",       # BC trial names
+# Tier 1 — unambiguous dementia terms: pass immediately.
+# Tier 2 — terms shared with other fields: only pass when a Tier-1 term is also
+#           present. "amyloid" alone is cardiac amyloidosis, "tau" alone shows up
+#           in oncology kinase papers, "biomarker" is universal.
+_DEMENTIA_DIRECT = [
+    "dementia", "Alzheimer", "Lewy body", "frontotemporal",
+    "mild cognitive impairment", "cognitive impairment", "cognitive decline",
+    "neurodegenerative", "neurodegeneration", "neurofibrillary",
+    "lecanemab", "Leqembi", "donanemab", "Kisunla", "aducanumab", "Aduhelm",
+    "gantenerumab", "solanezumab", "remternetug",
+    "donepezil", "rivastigmine", "galantamine", "memantine",
+    "amyloid PET", "tau PET", "p-tau217", "p-tau181", "phospho-tau",
+    "APOE4", "APOE e4", "ADNI", "AAIC", "CTAD",
+    "CLARITY AD", "TRAILBLAZER", "ADAS-Cog",
 ]
 _SHARED_TERMS = [
-    "HER2", "trastuzumab", "pertuzumab", "T-DXd", "Enhertu",
-    "sacituzumab", "olaparib", "talazoparib", "fulvestrant",
-    "CDK4", "CDK6", "ASCENT",
+    "amyloid", "tau", "APOE", "biomarker", "alpha-synuclein", "TDP-43",
+    "BACE1", "gamma-secretase", "neuroinflammation", "MMSE", "cognition",
 ]
 
 
@@ -84,16 +88,12 @@ def _digest_abstract(abstract: str, max_chars: int = 400) -> str:
 
 
 def _extract_tags(text: str) -> list[str]:
-    tl = text.lower()
-    return list(dict.fromkeys(k for k in config.keywords() if k.lower() in tl))
+    return config.match_keywords(text)
 
 
 def _passes_prescreen(text: str) -> bool:
-    tl = text.lower()
-    if any(t.lower() in tl for t in _BC_DIRECT):
-        return True
-    # Shared biomarkers only count when a direct BC term is also present
-    return False
+    """Broad net for dementia relevance. Tier-2 terms never pass on their own."""
+    return bool(config.keyword_pattern(tuple(_DEMENTIA_DIRECT)).search(text))
 
 
 def _pub_date(item: dict) -> Optional[str]:

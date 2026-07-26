@@ -24,13 +24,11 @@ class Article:
 
 
 def _is_bc_relevant(text: str) -> bool:
-    tl = text.lower()
-    return any(kw.lower() in tl for kw in config.keywords())
+    return bool(config.keyword_pattern().search(text))
 
 
 def _extract_tags(text: str) -> list[str]:
-    tl = text.lower()
-    return list(dict.fromkeys(kw for kw in config.keywords() if kw.lower() in tl))
+    return config.match_keywords(text)
 
 
 def _rfc_to_iso(rfc_date: str) -> Optional[str]:

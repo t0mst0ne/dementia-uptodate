@@ -9,7 +9,7 @@
 #   issn         print or electronic ISSN (CrossRef accepts either)
 #   days_back    how many days of articles to fetch (default: 14)
 #   max_items    max articles to retrieve per run (default: 30)
-#   bc_filter    filter to breast-cancer-relevant articles only (default: true)
+#   bc_filter    filter to dementia-relevant articles only (default: true)
 #
 # CrossRef API is free, no key required.
 # Polite pool: include a mailto in User-Agent (set in crossref_fetcher.py).
@@ -17,52 +17,73 @@
 crossref_email: "ppoiu87@gmail.com"   # used in User-Agent for CrossRef polite pool
 
 journals:
-  - name: JCO
-    full_name: "Journal of Clinical Oncology"
-    issn: "0732-183X"
+  - name: Alzheimer's & Dementia
+    full_name: "Alzheimer's & Dementia: The Journal of the Alzheimer's Association"
+    issn: "1552-5260"
     days_back: 14
     max_items: 30
     bc_filter: true
 
+  - name: Lancet Neurology
+    full_name: "The Lancet Neurology"
+    issn: "1474-4422"
+    days_back: 14
+    max_items: 25
+    bc_filter: true
+
+  - name: JAMA Neurology
+    full_name: "JAMA Neurology"
+    issn: "2168-6149"
+    days_back: 14
+    max_items: 25
+    bc_filter: true
+
+  - name: Neurology
+    full_name: "Neurology"
+    issn: "0028-3878"
+    days_back: 14
+    max_items: 30
+    bc_filter: true
+
+  - name: Alzheimer's Research & Therapy
+    full_name: "Alzheimer's Research & Therapy"
+    issn: "1758-9193"
+    days_back: 14
+    max_items: 25
+    bc_filter: true
+
+  - name: NEJM
+    full_name: "New England Journal of Medicine"
+    issn: "0028-4793"
+    days_back: 14
+    max_items: 20
+    bc_filter: true
+
   # Uncomment to activate — no code changes needed
-  # - name: NEJM
-  #   full_name: "New England Journal of Medicine"
-  #   issn: "0028-4793"
+  # - name: Brain
+  #   full_name: "Brain"
+  #   issn: "0006-8950"
   #   days_back: 14
   #   max_items: 20
   #   bc_filter: true
 
-  # - name: Lancet Oncology
-  #   full_name: "The Lancet Oncology"
-  #   issn: "1470-2045"
+  # - name: Annals of Neurology
+  #   full_name: "Annals of Neurology"
+  #   issn: "0364-5134"
+  #   days_back: 14
+  #   max_items: 20
+  #   bc_filter: true
+
+  # - name: Journal of Alzheimer's Disease
+  #   full_name: "Journal of Alzheimer's Disease"
+  #   issn: "1387-2877"
   #   days_back: 14
   #   max_items: 25
   #   bc_filter: true
 
-  # - name: JAMA Oncology
-  #   full_name: "JAMA Oncology"
-  #   issn: "2374-2437"
-  #   days_back: 14
-  #   max_items: 20
-  #   bc_filter: true
-
-  # - name: Annals of Oncology
-  #   full_name: "Annals of Oncology"
-  #   issn: "0923-7534"
-  #   days_back: 14
-  #   max_items: 20
-  #   bc_filter: true
-
-  # - name: Blood          # hematology
-  #   full_name: "Blood"
-  #   issn: "0006-4971"
-  #   days_back: 14
-  #   max_items: 25
-  #   bc_filter: true
-
-  # - name: JCO Oncology Practice
-  #   full_name: "JCO Oncology Practice"
-  #   issn: "2688-1527"
+  # - name: Nature Aging
+  #   full_name: "Nature Aging"
+  #   issn: "2662-8465"
   #   days_back: 14
   #   max_items: 15
   #   bc_filter: true
