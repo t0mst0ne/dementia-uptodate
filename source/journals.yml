@@ -31,6 +31,13 @@ journals:
     max_items: 25
     bc_filter: true
 
+  - name: Nature Reviews Neurology
+    full_name: "Nature Reviews Neurology"
+    issn: "1759-4766"
+    days_back: 14
+    max_items: 25
+    bc_filter: true
+
   - name: JAMA Neurology
     full_name: "JAMA Neurology"
     issn: "2168-6149"

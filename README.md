@@ -23,7 +23,7 @@
 - **網頁新聞爬取**：Alzforum、NeurologyToday、Alzheimer's Association、CTAD/AAIC，
   以及 NEJM / JAMA Neurology 的 Google News RSS，只收最近 7 天
 - **期刊文獻**：透過 CrossRef API 抓取 Alzheimer's & Dementia、Lancet Neurology、
-  JAMA Neurology、Neurology、Alzheimer's Research & Therapy、NEJM，預設 14 天
+  Nature Reviews Neurology、JAMA Neurology、Neurology、Alzheimer's Research & Therapy、NEJM，預設 14 天
 - **兩層關鍵字篩選**：依 `source/keywords.yml` 與 `src/crossref_fetcher.py` 的
   Tier-1/Tier-2 詞庫過濾，排除心臟類澱粉沉積症、腫瘤等他科文獻
 - **Telegram 通知**：產生新報告後自動推播
