@@ -87,6 +87,8 @@ def cmd_notify():
     from src import telegram_notifier
 
     if not telegram_notifier.is_configured():
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            raise RuntimeError("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID must be configured in repository secrets")
         console.print("[yellow]TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — skipping notification.[/yellow]")
         return
 
@@ -96,6 +98,10 @@ def cmd_notify():
         console.print("[yellow]No reports found — nothing to notify.[/yellow]")
         return
     latest = reports[-1]
+    if os.environ.get("REPORT_PATH"):
+        latest = Path(__file__).parent / os.environ["REPORT_PATH"]
+        if latest.resolve().parent != reports_dir.resolve() or not latest.is_file():
+            raise ValueError("REPORT_PATH must name an existing weekly report in reports/")
 
     def count_articles(cache_name: str) -> int:
         cache = Path(__file__).parent / "data" / cache_name
@@ -107,10 +113,9 @@ def cmd_notify():
     web_count = count_articles("webscrape_cache.json")
     journal_count = count_articles("journals_cache.json")
 
-    lines = [
-        f"🧠 *Dementia Weekly Report {latest.stem}*",
-        f"新聞 {web_count} 篇｜期刊 {journal_count} 篇",
-    ]
+    lines = [f"🧠 *Dementia Weekly Report {latest.stem}*"]
+    if not os.environ.get("REPORT_PATH"):
+        lines.append(f"新聞 {web_count} 篇｜期刊 {journal_count} 篇")
     repo = os.environ.get("GITHUB_REPOSITORY")
     if repo:
         lines.append(f"https://github.com/{repo}/blob/main/reports/{latest.name}")

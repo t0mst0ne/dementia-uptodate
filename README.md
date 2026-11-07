@@ -67,7 +67,7 @@
 ### 1. GitHub Secrets
 
 蒐集來源全部為公開的 RSS / Google News / CrossRef，**不需要金鑰**。
-只有 Telegram 通知需要以下兩個 secret，未設定時該步驟會自動跳過而非失敗：
+只有 Telegram 通知需要以下兩個 secret。本機未設定時會跳過；GitHub Actions 未設定時會失敗，避免誤判通知成功：
 
 | Secret 名稱 | 說明 |
 |------------|------|
@@ -101,7 +101,12 @@ uv run python main.py notify   # 推播最新報告至 Telegram
 ### 自動排程
 
 GitHub Actions 每週一 UTC 00:00（台北時間週一 08:00）自動執行，
-結果提交至 `reports/`，推播 Telegram，再由 Wiki workflow 發布至本 repo 的 **Wiki**。
+結果提交至 `reports/` 並推播 Telegram。
+
+手動或其他工具推送週報至 `main` 時，Wiki workflow 會平行執行 Wiki 發布與 Telegram 通知；Wiki 失敗不影響通知。
+每次推送通知該次變更中週次最新的週報，內容包含報告連結。
+刪除週報或僅修改非週報檔案不會通知。手動執行 Wiki workflow 會重新通知最新週報。
+排程產報沿用原本的通知步驟；GitHub 的 `GITHUB_TOKEN` 推送不會觸發另一個 push workflow，因此不會重複通知。
 
 首次啟用前，請先初始化 repository Wiki。
 

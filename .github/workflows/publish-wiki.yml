@@ -9,6 +9,49 @@ on:
   workflow_dispatch:
 
 jobs:
+  notify-telegram:
+    name: Notify Telegram about report updates
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select updated weekly report
+        id: report
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            report=$(git ls-files 'reports/*-W*.md' | sort | tail -n 1)
+          else
+            report=$(git diff --name-only --diff-filter=AM "$BEFORE_SHA" "$AFTER_SHA" -- 'reports/*-W*.md' | sort | tail -n 1)
+          fi
+          echo "path=$report" >> "$GITHUB_OUTPUT"
+
+      - name: Install uv
+        if: steps.report.outputs.path != ''
+        uses: astral-sh/setup-uv@v9.0.0
+
+      - name: Set up Python and dependencies
+        if: steps.report.outputs.path != ''
+        run: |
+          uv python install 3.11
+          uv sync --locked
+
+      - name: Notify Telegram
+        if: steps.report.outputs.path != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          REPORT_PATH: ${{ steps.report.outputs.path }}
+        run: uv run python main.py notify
+
   publish:
     runs-on: ubuntu-latest
     permissions:

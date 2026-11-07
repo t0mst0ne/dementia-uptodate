@@ -34,4 +34,6 @@ def send_message(text: str) -> bool:
         timeout=15,
     )
     resp.raise_for_status()
+    if resp.json().get("ok") is not True:
+        raise RuntimeError("Telegram API did not confirm message delivery")
     return True
