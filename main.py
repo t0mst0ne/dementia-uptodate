@@ -41,6 +41,9 @@ def cmd_journals():
     console.print("\n[bold]Fetching journal articles via CrossRef...[/bold]")
     results = asyncio.run(crossref_fetcher.fetch_all())
     for journal, articles in results.items():
+        if journal in crossref_fetcher.FETCH_FAILURES:
+            console.print(f"  [red]{journal}: FETCH FAILED — {crossref_fetcher.FETCH_FAILURES[journal]}[/red]")
+            continue
         console.print(f"  [cyan]{journal}[/cyan]: {len(articles)} dementia articles")
         for a in articles[:4]:
             has_abs = "✓" if a.abstract_digest else "—"
@@ -59,6 +62,12 @@ def cmd_journals():
         ensure_ascii=False, indent=2
     ))
     console.print(f"[green]✓ Cached → {out}[/green]")
+    status = out.parent / "journals_fetch_status.json"
+    status.write_text(json.dumps(
+        {"failed": crossref_fetcher.FETCH_FAILURES,
+         "ok": [j for j in results if j not in crossref_fetcher.FETCH_FAILURES]},
+        ensure_ascii=False, indent=2
+    ))
     return results
 
 

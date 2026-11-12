@@ -2,6 +2,7 @@
 
 import asyncio
 import re
+import sys
 import yaml
 from dataclasses import dataclass, field
 from datetime import date, timedelta
@@ -49,6 +50,14 @@ class JournalArticle:
     tags: list[str] = field(default_factory=list)
     url: str = ""
 
+
+
+# Retry policy for CrossRef queries. A failed journal is recorded in
+# FETCH_FAILURES so the report says "查詢失敗" instead of "no articles".
+FETCH_TIMEOUT = 60
+FETCH_ATTEMPTS = 3
+RETRY_BACKOFF = 5  # seconds × attempt number
+FETCH_FAILURES: dict[str, str] = {}
 
 def _load_journals() -> list[dict]:
     data = yaml.safe_load((SOURCE_DIR / "journals.yml").read_text())
@@ -133,15 +142,26 @@ async def _fetch_journal(
         "order": "desc",
         "select": "DOI,title,author,abstract,published,published-print,published-online,URL,container-title",
     }
-    try:
-        r = await client.get(
-            "https://api.crossref.org/works",
-            params=params,
-            headers={"User-Agent": f"breast-cancer-uptodate/1.0 (mailto:{email})"},
-            timeout=25,
-        )
-        r.raise_for_status()
-    except Exception:
+    r = None
+    last_error = ""
+    for attempt in range(1, FETCH_ATTEMPTS + 1):
+        try:
+            r = await client.get(
+                "https://api.crossref.org/works",
+                params=params,
+                headers={"User-Agent": f"dementia-uptodate/1.0 (mailto:{email})"},
+                timeout=FETCH_TIMEOUT,
+            )
+            r.raise_for_status()
+            break
+        except Exception as e:  # timeout, HTTP error, connection error
+            last_error = f"{type(e).__name__}: {e}"[:200]
+            r = None
+            if attempt < FETCH_ATTEMPTS:
+                await asyncio.sleep(RETRY_BACKOFF * attempt)
+    if r is None:
+        FETCH_FAILURES[journal["name"]] = f"{FETCH_ATTEMPTS} attempts failed ({last_error})"
+        print(f"WARNING: CrossRef fetch failed for {journal['name']}: {last_error}", file=sys.stderr)
         return []
 
     articles = []
@@ -183,19 +203,26 @@ async def _fetch_journal(
 async def fetch_all() -> dict[str, list[JournalArticle]]:
     journals = _load_journals()
     email = _crossref_email()
+    FETCH_FAILURES.clear()
     async with httpx.AsyncClient() as client:
         results = await asyncio.gather(*[_fetch_journal(client, j, email) for j in journals])
     return {j["name"]: arts for j, arts in zip(journals, results)}
 
 
 def format_articles_md(results: dict[str, list[JournalArticle]]) -> str:
-    if not any(results.values()):
+    if not any(results.values()) and not FETCH_FAILURES:
         return ""
 
     lines = ["\n## 文獻速報 — CrossRef 期刊\n"]
     lines.append("> 資料來源：CrossRef API · 關鍵詞預篩後由 Claude 在報告生成時確認相關性\n")
 
     for journal_name, articles in results.items():
+        if journal_name in FETCH_FAILURES:
+            lines.append(
+                f"\n### {journal_name}\n\n**⚠️ CrossRef 查詢失敗，本期資料缺漏**"
+                f"（{FETCH_FAILURES[journal_name]}）\n"
+            )
+            continue
         if not articles:
             lines.append(f"\n### {journal_name}\n\n_本期未取得相關論文_\n")
             continue
